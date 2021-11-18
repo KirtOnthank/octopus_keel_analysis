@@ -1,0 +1,37 @@
+---
+title: "Pulling_BOLD_Octopus"
+author: "Kirt Onthank"
+date: "11/18/2021"
+output: pdf_document
+---
+
+```{r}
+library(bold)
+library(xlsx)
+```
+
+# Getting and filtering data from BOLD
+## Pulling all species in the family Octopoda
+```{r}
+octo.spec=bold_specimens(taxon='Octopoda')
+```
+
+## Dropping sequences without a species assigned
+```{r}
+octo=octo.spec[complete.cases(octo.spec$species_taxID),]
+```
+
+## Dropping sequences that are not to an exact species or to a subspecies (producing a duplicate for the species)
+```{r}
+octo=octo[!grepl("sp.|cf.|aff.|s.l.|s.s.",octo$species_name),]
+```
+
+## Getting only the first occurence for each species
+```{r}
+octo=octo[match(unique(octo$species_taxID), octo$species_taxID),]
+```
+
+```{r}
+write.xlsx(octo,"octo_species.xlsx")
+```
+
